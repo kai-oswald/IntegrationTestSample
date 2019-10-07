@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IntegrationTestSample.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,13 @@ namespace IntegrationTestSample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes= "Cookies,Token")]
     public class UsersController : ControllerBase
     {
         [HttpGet("")]
         public List<string> GetUsers()
         {
             return new List<string> { "Foo", "Bar", "Baz" };
-        }
+        }        
     }
 }
