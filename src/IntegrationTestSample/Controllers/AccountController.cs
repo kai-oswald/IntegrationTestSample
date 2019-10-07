@@ -1,4 +1,5 @@
 ﻿using IntegrationTestSample.Models;
+using IntegrationTestSample.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace IntegrationTestSample.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IHostingEnvironment _env;
+        private readonly IUserService _userService;
 
-        public AccountController(IHostingEnvironment env)
+        public AccountController(IHostingEnvironment env, IUserService userService)
         {
             _env = env;
+            _userService = userService;
         }
 
         [HttpPost("Login")]
@@ -43,6 +46,16 @@ namespace IntegrationTestSample.Controllers
             }
             await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal);
             return NoContent();
+        }
+
+        [HttpPost("Token")]
+        public IActionResult GetToken([FromBody] UserLoginModel loginModel)
+        {
+            var user = _userService.Authenticate(loginModel.UserName, loginModel.Password);
+            if (user == null)
+                return BadRequest($"Invalid username/password combination");
+
+            return Ok(user);
         }
     }
 }
